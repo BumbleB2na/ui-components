@@ -2,12 +2,19 @@
 
 This project contains the Government of Alberta UI components. This web component project supports multiple frontend frameworks, React and Angular. The project is designed to be used to help bring consistency to all Government of Alberta websites and web applications. It's also being designed to help ease the burden on designers and developers alike throughout the development process.
 
-## Playground Setup
-
-Run the `app-setup.sh` file.
+## Install Dependencies
 
 ```
-./app-setup.sh
+npm i
+npm run build
+```
+
+## Playground Setup
+
+Run the `playground-setup.sh` file.
+
+```
+./playground-setup.sh
 ```
 
 You can then test the playground apps at `localhost:4200` by running one of the following:
@@ -15,10 +22,8 @@ You can then test the playground apps at `localhost:4200` by running one of the 
 ```
 npm run dev:angular
 npm run dev:react
-npm run dev:web 
+npm run dev:web
 ```
-
-
 
 ## Contribution Guidelines
 
