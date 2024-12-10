@@ -840,7 +840,9 @@ describe("GoADropdown", () => {
       const child = document.createElement("goa-dropdown-item");
       child.setAttribute("value", "cyan");
       child.setAttribute("mount", "reset");
-      container.querySelector("[data-testid=dropdown-menu]")?.appendChild(child);
+      container
+        .querySelector("[data-testid=dropdown-menu]")
+        ?.appendChild(child);
 
       await waitFor(() => {
         const children = document.querySelectorAll("goa-dropdown-item");
@@ -862,7 +864,9 @@ describe("GoADropdown", () => {
       const child = document.createElement("goa-dropdown-item");
       child.setAttribute("value", "cyan");
       child.setAttribute("mount", "prepend");
-      container.querySelector("[data-testid=dropdown-menu]")?.appendChild(child);
+      container
+        .querySelector("[data-testid=dropdown-menu]")
+        ?.appendChild(child);
 
       await waitFor(() => {
         const children = container.querySelectorAll("li");
@@ -885,7 +889,9 @@ describe("GoADropdown", () => {
       const child = document.createElement("goa-dropdown-item");
       child.setAttribute("value", "cyan");
       child.setAttribute("mount", "append");
-      container.querySelector("[data-testid=dropdown-menu]")?.appendChild(child);
+      container
+        .querySelector("[data-testid=dropdown-menu]")
+        ?.appendChild(child);
 
       await waitFor(() => {
         const children = container.querySelectorAll("li");
