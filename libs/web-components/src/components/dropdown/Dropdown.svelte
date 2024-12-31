@@ -317,6 +317,10 @@
 
   function hideMenu() {
     _isMenuVisible = false;
+
+    if (_filterable) {
+      setDisplayedValue();
+    }
   }
 
   function isFilterMatch(option: Option, filter: string) {
@@ -373,13 +377,6 @@
   function onFilteredOptionClick(option: Option) {
     _isDirty = true;
     onSelect(option);
-  }
-
-  // Fires when on blur and changes have been made AND when the browser auto-fill is performed
-  async function onChange(e: Event) {
-    if (!_filterable) return;
-
-    setDisplayedValue();
   }
 
   function onInputKeyUp(e: KeyboardEvent) {
@@ -673,7 +670,6 @@
           {name}
           on:keydown={onInputKeyDown}
           on:keyup={onInputKeyUp}
-          on:change={onChange}
           on:focus={onFocus}
         />
 
