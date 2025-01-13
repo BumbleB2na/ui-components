@@ -329,6 +329,7 @@
       setTimeout(() => {
         if (_selectedOption) {
           setHighlightedToSelected();
+          scrollToHighlighted();
         }
       }, 0);
     }, 0);
