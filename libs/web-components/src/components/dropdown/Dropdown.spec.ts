@@ -3,6 +3,14 @@ import GoADropdown from "./Dropdown.svelte";
 import GoADropdownWrapper from "./DropdownWrapper.test.svelte";
 import { describe, it } from "vitest";
 import { tick } from "svelte";
+import userEvent from "@testing-library/user-event";
+import type { UserEvent } from "@testing-library/user-event/dist/types/setup/setup";
+
+let user: UserEvent;
+
+beforeEach(() => {
+  user = userEvent.setup();
+});
 
 afterEach(() => {
   cleanup();
@@ -341,19 +349,19 @@ describe("GoADropdown", () => {
       });
     });
 
-    it("replace filterable input value onchange/blur with selected option value", async () => {
-      const query = "z";
+    it("replace non-matching filterable input value with previously selected option value", async () => {
       const result = render(GoADropdownWrapper, {
         name,
-        value: items[0],
+        value: items[0],  // previously selected value
         items,
         filterable: true,
       });
 
+      const query = "z";  // non-matching value
       const input = result.getByTestId("input") as HTMLInputElement;
       await fireEvent.focus(input);
       await fireEvent.keyUp(input, { key: query[0] });
-      await fireEvent.input(input, { target: { value: query } });
+      await fireEvent.input(input, { target: { value: query[0] } });
 
       await waitFor(() => {
         const popover = result.getByTestId("option-list");
@@ -379,6 +387,33 @@ describe("GoADropdown", () => {
       await waitFor(async () => {
         expect(onChange).toBeCalledTimes(1);
         expect(input.value).toBe(items[0]);
+      });
+    });
+
+    // Pasting from clipboard into input simulates browser autofill/autocomplete
+    it("select option value after paste from clipboard", async () => {
+      const result = render(GoADropdownWrapper, {
+        name,
+        items,
+        filterable: true,
+      });
+
+      let input = result.getByTestId("input") as HTMLInputElement;
+      expect(input.value).toBe("");
+
+      await user.click(input);
+      await user.paste(items[0]);
+      // Note: If this were browser autofill the value would have been selected but,
+      // pasting from clipboard requires blur then re-focus to see selected option:
+      await user.click(document.body);
+      await user.click(input);
+
+      input = result.getByTestId("input") as HTMLInputElement;
+      expect(input.value).toBe(items[0]);
+      await waitFor(async () => {
+        const selected = result.container.querySelector("li[aria-selected=true]");
+        expect(selected).not.toBeNull();
+        expect(selected?.innerHTML).toContain(items[0]);
       });
     });
 

@@ -260,6 +260,18 @@
     return `${maxWidth}ch`;
   }
 
+  function setHighlightedToSelected() {
+    if (!_filterable) return;
+    if (!_selectedOption) {
+      _highlightedIndex = -1;
+      return;
+    }
+    const index = _filteredOptions.findIndex(
+      (option) => option.value === _selectedOption?.value,
+    );
+    _highlightedIndex = index;
+  }
+
   // Change the direction of highlighted options for Arrow up and down
   function changeHighlightedOption(offset: number) {
     let index = _highlightedIndex + offset;
@@ -273,11 +285,12 @@
       index = _filterable ? 0 : items.length - 1;
     }
     _highlightedIndex = index;
-    scrollToOption(index);
+    scrollToHighlighted();
   }
 
-  function scrollToOption(index: number) {
-    const liNode = _menuEl.querySelector(
+  function scrollToHighlighted() {
+    const index = _highlightedIndex;
+    const liNode = _menuEl?.querySelector(
       `li[data-index="${index}"]`,
     ) as HTMLLIElement;
     if (!liNode) return;
@@ -312,6 +325,12 @@
       syncFilteredOptions();
       _isMenuVisible = true;
       // _inputEl?.focus();
+
+      setTimeout(() => {
+        if (_selectedOption) {
+          setHighlightedToSelected();
+        }
+      }, 0);
     }, 0);
   }
 
@@ -367,9 +386,10 @@
     _selectedOption = option;
 
     if (!_native) {
-      hideMenu();
       syncFilteredOptions();
       setDisplayedValue();
+      setHighlightedToSelected();
+      hideMenu();
     }
     dispatchValue(option.value);
   }
@@ -377,6 +397,26 @@
   function onFilteredOptionClick(option: Option) {
     _isDirty = true;
     onSelect(option);
+  }
+
+  // Auto-select matching option from input after browser autofill/autocomplete or paste from clipboard
+  function onInputChange(e: Event) {
+    if (_disabled || !_filterable) return;
+
+    const inputValue =
+      e.currentTarget instanceof HTMLInputElement &&
+      (e.currentTarget as HTMLInputElement).value;
+    const matchedOption =
+      inputValue &&
+      _filteredOptions.find(
+        (option) => option.label?.toLowerCase() === inputValue.toLowerCase(),
+      );
+
+    if (matchedOption && _selectedOption?.value !== matchedOption.value) {
+      onFilteredOptionClick(matchedOption);
+      setDisplayedValue();
+      scrollToHighlighted();
+    }
   }
 
   function onInputKeyUp(e: KeyboardEvent) {
@@ -670,6 +710,7 @@
           {name}
           on:keydown={onInputKeyDown}
           on:keyup={onInputKeyUp}
+          on:change={onInputChange}
           on:focus={onFocus}
         />
 
